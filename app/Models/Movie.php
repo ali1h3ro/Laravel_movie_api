@@ -17,11 +17,17 @@ class Movie extends Model
         'year',
         'external_id',  // Make sure external_id is fillable
         'fetch_logs',
+        'batch_id' // Add this field to link to the batch model
     ];
     protected $casts = [
         'fetch_logs' => 'array',
         'year' => 'integer'
     ];
+
+    public function batch()
+    {
+        return $this->belongsTo(MovieBatch::class);
+    }
 
     public function reviews()
     {
@@ -29,7 +35,7 @@ class Movie extends Model
     }
     public function scopeSearch(Builder $query, string $search): Builder
     {
-        
+
         return $query->where(function ($q) use ($search) {
             $q->where('title', 'LIKE', "%{$search}%")
               ->orWhere('description', 'LIKE', "%{$search}%");
