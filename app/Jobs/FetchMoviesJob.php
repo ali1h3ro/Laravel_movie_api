@@ -1,19 +1,18 @@
 <?php
+
 namespace App\Jobs;
 
 use App\Models\MovieBatch;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
-use Illuminate\Bus\Batchable;
-
-
 
 class FetchMoviesJob implements ShouldQueue
 {
@@ -24,14 +23,14 @@ class FetchMoviesJob implements ShouldQueue
         try {
             // First, we'll make an initial API call to get the total pages
             $initialResponse = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('services.tmdb.api_token'),
+                'Authorization' => 'Bearer '.config('services.tmdb.api_token'),
                 'Accept' => 'application/json',
             ])->get('https://api.themoviedb.org/3/movie/popular', [
                 'page' => 1,
-                'language' => 'en-US'
+                'language' => 'en-US',
             ]);
 
-            if (!$initialResponse->successful()) {
+            if (! $initialResponse->successful()) {
                 throw new \Exception('Failed to fetch initial movie data');
             }
 
@@ -43,7 +42,7 @@ class FetchMoviesJob implements ShouldQueue
                 'started_at' => now(),
                 'status' => 'processing',
                 'total_pages' => $totalPages,
-                'pages_processed' => 0
+                'pages_processed' => 0,
             ]);
 
             // Dispatch a job for each page
@@ -60,12 +59,12 @@ class FetchMoviesJob implements ShouldQueue
 
             Log::info('Movie fetch jobs dispatched', [
                 'batch_id' => $movieBatch->id,
-                'total_pages' => $totalPages
+                'total_pages' => $totalPages,
             ]);
 
         } catch (Throwable $e) {
             Log::error('Failed to initialize movie fetch', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }

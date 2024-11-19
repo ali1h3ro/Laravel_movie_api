@@ -10,9 +10,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    use HasApiTokens;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-    use HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -47,8 +48,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function reviews()
-{
-    return $this->hasMany(Review::class);
-}
+    {
+        return $this->hasMany(Review::class);
+    }
 }

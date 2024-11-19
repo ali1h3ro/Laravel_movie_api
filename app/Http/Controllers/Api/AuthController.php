@@ -1,17 +1,19 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Requests\Api\V1\RegisterRequest;
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use App\Traits\ApiResponses;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
 class AuthController extends Controller
 {
     use ApiResponses;
+
     public function register(RegisterRequest $request)
     {
         $request->validated();
@@ -36,7 +38,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return $this->error('The provided credentials are incorrect.', 422);
         }
 

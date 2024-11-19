@@ -9,12 +9,13 @@ class Review extends Model
 {
     /** @use HasFactory<\Database\Factories\ReviewFactory> */
     use HasFactory;
+
     protected $fillable = [
         'movie_id',
         'author',
         'user_id',
         'comment',
-        'rating'
+        'rating',
     ];
 
     public function movie()

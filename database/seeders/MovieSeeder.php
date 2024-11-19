@@ -1,10 +1,12 @@
 <?php
+
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Movie;
 use App\Models\Review;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
+
 class MovieSeeder extends Seeder
 {
     public function run()
@@ -33,7 +35,7 @@ class MovieSeeder extends Seeder
                 Review::factory(rand(3, 5))->create(['movie_id' => $movie->id]);
             }
         } else {
-            $this->command->error("Failed to fetch data from TMDb.");
+            $this->command->error('Failed to fetch data from TMDb.');
         }
     }
 }

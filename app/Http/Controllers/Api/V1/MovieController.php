@@ -2,32 +2,34 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Resources\Api\V1\MovieResource;
-use App\Traits\ApiResponses;
-use App\Models\Movie;
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\Api\V1\SearchMoviesRequest;
+use App\Http\Resources\Api\V1\MovieResource;
+use App\Models\Movie;
+use App\Traits\ApiResponses;
+
 class MovieController extends Controller
 {
     use ApiResponses;
+
     public function show($id)
     {
         $movie = Movie::with('reviews')->find($id);
 
-        if (!$movie) {
-        return $this->error('Movie not found',404);
+        if (! $movie) {
+            return $this->error('Movie not found', 404);
 
         }
 
-        return $this->success('Movies returned successfully',new MovieResource($movie));
+        return $this->success('Movies returned successfully', new MovieResource($movie));
     }
 
     public function index()
     {
-        return $this->success('Movies returned successfully',MovieResource::collection(Movie::all()));
+        return $this->success('Movies returned successfully', MovieResource::collection(Movie::all()));
 
     }
+
     public function search(SearchMoviesRequest $request)
     {
 
@@ -42,8 +44,8 @@ class MovieController extends Controller
             $q->search($searchTerm);  // Apply search by title or description
         });
 
-        $query->when($validated['year'] ?? null, fn($q, $year) => $q->year($year));  // Apply year filter
-        $query->when($validated['director'] ?? null, fn($q, $director) => $q->director($director));  // Apply director filter
+        $query->when($validated['year'] ?? null, fn ($q, $year) => $q->year($year));  // Apply year filter
+        $query->when($validated['director'] ?? null, fn ($q, $director) => $q->director($director));  // Apply director filter
 
         // Apply sorting
         $sortBy = $validated['sort_by'] ?? 'created_at';
@@ -63,9 +65,9 @@ class MovieController extends Controller
                         'year' => $validated['year'] ?? null,
                         'director' => $validated['director'] ?? null,
                         'sort_by' => $sortBy,
-                        'order' => $order
-                    ])
-                ]
+                        'order' => $order,
+                    ]),
+                ],
             ]);
     }
 }

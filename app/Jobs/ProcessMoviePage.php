@@ -4,13 +4,13 @@ namespace App\Jobs;
 
 use App\Models\Movie;
 use App\Models\MovieBatch;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -19,17 +19,19 @@ class ProcessMoviePage implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $page;
-    private $batchId;
 
+    private $batchId;
 
     public function __construct(int $page, int $batchId)
     {
         $this->page = $page;
         $this->batchId = $batchId;
     }
+
     public function withBatchId(string $batchId)
     {
         $this->batchId = $batchId;
+
         return $this;
     }
 
@@ -40,7 +42,7 @@ class ProcessMoviePage implements ShouldQueue
         try {
             $movies = $this->fetchMoviesPage($this->page);
 
-            if ($movies && !empty($movies['results'])) {
+            if ($movies && ! empty($movies['results'])) {
                 $processedCount = $this->processMovies($movies['results'], $movieBatch);
 
                 $movieBatch->increment('movies_processed', $processedCount);
@@ -49,7 +51,7 @@ class ProcessMoviePage implements ShouldQueue
             Log::error('Failed to process movie page', [
                 'page' => $this->page,
                 'batch_id' => $this->batchId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             throw $e;
@@ -59,18 +61,19 @@ class ProcessMoviePage implements ShouldQueue
     private function fetchMoviesPage(int $page): ?array
     {
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . config('services.tmdb.api_token'),
+            'Authorization' => 'Bearer '.config('services.tmdb.api_token'),
             'Accept' => 'application/json',
         ])->get('https://api.themoviedb.org/3/movie/popular', [
             'page' => $page,
-            'language' => 'en-US'
+            'language' => 'en-US',
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('TMDB API request failed', [
                 'status' => $response->status(),
-                'body' => $response->body()
+                'body' => $response->body(),
             ]);
+
             return null;
         }
 
@@ -95,24 +98,26 @@ class ProcessMoviePage implements ShouldQueue
     {
         if (empty($movieData['id'])) {
             Log::warning('Missing external_id for movie', ['data' => $movieData]);
+
             return false;
         }
 
         $movieAttributes = [
             'title' => $movieData['title'],
             'description' => $movieData['overview'] ?? null,
-            'external_id' => (string)$movieData['id'],
+            'external_id' => (string) $movieData['id'],
             'year' => isset($movieData['release_date']) ? Carbon::parse($movieData['release_date'])->year : null,
-            'batch_id' => $batch->id
+            'batch_id' => $batch->id,
         ];
 
         $movie = Movie::updateOrCreate(
-            ['external_id' => (string)$movieData['id']],
+            ['external_id' => (string) $movieData['id']],
             $movieAttributes
         );
-        
+
         Log::info('Movie processed', ['movie_id' => $movie->id, 'batch_id' => $batch->id]);
         $this->updateMovieLogs($movie, $movieData, $fetchTime, $batch);
+
         return true;
     }
 
@@ -124,7 +129,7 @@ class ProcessMoviePage implements ShouldQueue
             'status' => 'success',
             'api_data' => $movieData,
             'batch_id' => $batch->id,
-            'page' => $this->page
+            'page' => $this->page,
         ];
 
         $logs = $movie->fetch_logs ?? [];

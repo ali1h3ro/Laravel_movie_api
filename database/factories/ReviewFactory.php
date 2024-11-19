@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Factories;
+
 use App\Models\Movie;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,10 +18,10 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
-        'movie_id' => Movie::factory(),
-        'author' => $this->faker->name,
-        'comment' => $this->faker->sentence,
-        'rating' => $this->faker->numberBetween(1, 5),
+            'movie_id' => Movie::factory(),
+            'author' => $this->faker->name,
+            'comment' => $this->faker->sentence,
+            'rating' => $this->faker->numberBetween(1, 5),
         ];
     }
 }

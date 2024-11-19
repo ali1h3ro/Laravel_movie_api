@@ -23,7 +23,7 @@ class SearchMoviesRequest extends FormRequest
     {
         return [
             'query' => ['nullable', 'string', 'min:2'],
-            'year' => ['nullable', 'integer', 'min:1900', 'max:' . now()->addYears(10)->year],
+            'year' => ['nullable', 'integer', 'min:1900', 'max:'.now()->addYears(10)->year],
             'director' => ['nullable', 'string'],
             'sort_by' => ['nullable', 'in:title,year,created_at'],
             'order' => ['nullable', 'in:asc,desc'],

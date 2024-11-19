@@ -1,16 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\V1\MovieController;
 use App\Http\Controllers\Api\V1\ReviewController;
-use App\Http\Controllers\Api\AuthController;
-use GuzzleHttp\Middleware;
+use Illuminate\Support\Facades\Route;
 
 // Route::get('/movies', [MovieController::class, 'show']);
 // Route::get('/movies/{id}', [MovieController::class, 'index']);
 // Route::post('/movies/{id}/review', [ReviewController::class, 'store']);
-
-
 
 Route::prefix('v1')->group(function () {
     Route::post('register', [AuthController::class, 'register']);

@@ -2,9 +2,9 @@
 
 namespace App\Console;
 
+use App\Jobs\FetchMoviesJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Jobs\FetchMoviesJob;
 use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
@@ -14,9 +14,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->job(new FetchMoviesJob())->everyMinute();
+        $schedule->job(new FetchMoviesJob)->everyMinute();
         // Optional: Log to confirm scheduler is running
-        Log::info('Scheduler checked at ' . now());
+        Log::info('Scheduler checked at '.now());
     }
 
     /**

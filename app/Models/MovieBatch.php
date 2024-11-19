@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class MovieBatch extends Model
 {
@@ -32,7 +31,7 @@ class MovieBatch extends Model
         // API-related metadata
         'source_api',       // API source (e.g., 'TMDB', 'IMDB')
         'api_endpoint',     // Specific endpoint used
-        'fetch_parameters'  // JSON of parameters used for fetching
+        'fetch_parameters',  // JSON of parameters used for fetching
     ];
 
     // Cast certain attributes to specific types
@@ -43,7 +42,7 @@ class MovieBatch extends Model
         'total_pages' => 'integer',
         'pages_processed' => 'integer',
         'total_movies' => 'integer',
-        'movies_processed' => 'integer'
+        'movies_processed' => 'integer',
     ];
 
     // Relationship with Movies
@@ -85,9 +84,10 @@ class MovieBatch extends Model
     // Calculate batch processing time
     public function processingTime(): ?float
     {
-        if (!$this->started_at || !$this->completed_at) {
+        if (! $this->started_at || ! $this->completed_at) {
             return null;
         }
+
         return $this->started_at->diffInSeconds($this->completed_at);
     }
 
@@ -97,6 +97,7 @@ class MovieBatch extends Model
         if ($this->total_movies == 0) {
             return 0;
         }
+
         return ($this->movies_processed / $this->total_movies) * 100;
     }
 
@@ -113,7 +114,7 @@ class MovieBatch extends Model
             'started_at' => now(),
             'status' => 'pending',
             'pages_processed' => 0,
-            'movies_processed' => 0
+            'movies_processed' => 0,
         ], $data));
     }
 
@@ -123,7 +124,7 @@ class MovieBatch extends Model
         $this->update([
             'status' => 'failed',
             'completed_at' => now(),
-            'error_message' => $errorMessage
+            'error_message' => $errorMessage,
         ]);
     }
 
@@ -134,7 +135,7 @@ class MovieBatch extends Model
             'status' => 'completed',
             'completed_at' => now(),
             'pages_processed' => $this->total_pages,
-            'movies_processed' => $this->total_movies
+            'movies_processed' => $this->total_movies,
         ]);
     }
 }
